@@ -22,7 +22,9 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     protected function getAuthUrl($state)
     {
-        return $this->buildAuthUrlFromBase('https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize', $state);
+        return $this->buildAuthUrlFromBase(
+            'https://www.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize', $state
+        );
     }
 
     /**
@@ -38,7 +40,8 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     protected function getUserByToken($token)
     {
-        $response = $this->getHttpClient()->get('https://api.paypal.com/v1/identity/openidconnect/userinfo/?schema=openid', [
+        $response = $this->getHttpClient()->get(
+            'https://api.paypal.com/v1/identity/openidconnect/userinfo/?schema=openid', [
             'headers' => [
                 'Authorization' => 'Bearer '.$token,
             ],
@@ -53,11 +56,9 @@ class Provider extends AbstractProvider implements ProviderInterface
     protected function mapUserToObject(array $user)
     {
         return (new User())->setRaw($user)->map([
-            'id'       => str_replace('https://www.paypal.com/webapps/auth/identity/user/', null, $user['user_id']),
-            'nickname' => null,
-            'name'     => $user['name'],
-            'email'    => $user['email'],
-            'avatar'   => null,
+            'id' => str_replace('https://www.paypal.com/webapps/auth/identity/user/', null, $user['user_id']),
+            'nickname' => null, 'name' => $user['name'],
+            'email' => $user['email'], 'avatar' => null,
         ]);
     }
 
@@ -68,8 +69,8 @@ class Provider extends AbstractProvider implements ProviderInterface
     {
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
-            'auth'    => [$this->clientId, $this->clientSecret],
-            'body'    => $this->getTokenFields($code),
+            'auth' => [$this->clientId, $this->clientSecret],
+            'body' => $this->getTokenFields($code),
         ]);
 
         return $this->parseAccessToken($response->getBody());
@@ -80,6 +81,8 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        return array_merge(parent::getTokenFields($code), ['grant_type' => 'authorization_code']);
+        return array_merge(parent::getTokenFields($code), [
+            'grant_type' => 'authorization_code',
+        ]);
     }
 }
