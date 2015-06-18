@@ -1,4 +1,5 @@
 <?php
+
 namespace SocialiteProviders\PayPal;
 
 use Laravel\Socialite\Two\AbstractProvider;
@@ -47,7 +48,7 @@ class Provider extends AbstractProvider implements ProviderInterface
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
@@ -70,10 +71,10 @@ class Provider extends AbstractProvider implements ProviderInterface
         $response = $this->getHttpClient()->post($this->getTokenUrl(), [
             'headers' => ['Accept' => 'application/json'],
             'auth' => [$this->clientId, $this->clientSecret],
-            'body' => $this->getTokenFields($code),
+            'form_params' => $this->getTokenFields($code),
         ]);
 
-        return $this->parseAccessToken($response->getBody());
+        return $this->parseAccessToken($response->getBody()->getContents());
     }
 
     /**
